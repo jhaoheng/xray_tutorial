@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  xray-daemon:
+    image: xray-daemon
+    container_name: xray-daemon
+    ports:
+      - 2000:2000/udp
+      - 2000:2000/tcp
+    environment:
+      - AWS_REGION=ap-southeast-1
+    volumes:
+      - ~/.aws/:/root/.aws/:ro
+    command: -l info -o
+
+  app:
+    image: golang:1.15.6
+    container_name: app
+    ports:
+      - 9001:9001
+    environment:
+      - XRAY_APP_NAME=local-xray-test
+      - XRAY_DAEMON_ADDR=xray-daemon:2000
+    volumes:
+      - ./app:/home/app
+    working_dir: /home/app
+    tty: true
+    command: go run main.go
+
+  mysql:
+    image: mariadb:10.5.3
+    container_name: mysql
+    ports:
+      - 3306:3306/tcp
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+
+  
