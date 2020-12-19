@@ -15,16 +15,19 @@ services:
   app:
     image: golang:1.15.6
     container_name: app
+    depends_on:
+      - mysql
     ports:
       - 9001:9001
     environment:
       - XRAY_APP_NAME=local-xray-test
       - XRAY_DAEMON_ADDR=xray-daemon:2000
+      - MYSQL_ADDR=mysql
     volumes:
       - ./app:/home/app
     working_dir: /home/app
     tty: true
-    command: go run main.go
+    # command: go run main.go
 
   mysql:
     image: mariadb:10.5.3
@@ -33,6 +36,7 @@ services:
       - 3306:3306/tcp
     environment:
       - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=xray
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d
 

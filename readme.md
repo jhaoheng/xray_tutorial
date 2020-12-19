@@ -25,7 +25,7 @@
 
 # deploy to ecs-fargate, steps
 
-1. go to ecr and create two repositories
+1. go to ECR and create two repositories
     - xray-app
     - aws-xray-daemon
 2. go to Makefile, to update the args
@@ -36,3 +36,6 @@
     - `make xray`
 4. go to AWS CloudFormation and build stack with `cfn.yml`
 5. go to ECS console and get Task public IP, `curl $IP` and then check XRAY console
+
+
+
