@@ -24,24 +24,15 @@ func (h *ManyFuncsHandler) ServeHTTP(writer http.ResponseWriter, request *http.R
 		funcTwo()
 		return nil
 	})
-	utility.DbXrayMiddle(request.Context(), "funcThree", func() error {
-		funcThree()
-		return nil
-	})
 	writer.WriteHeader(http.StatusOK)
 }
 
 func funcOne() {
 	log.Println("do func one")
-	time.Sleep(1 * time.Second)
+	time.Sleep(500 * time.Microsecond)
 }
 
 func funcTwo() {
 	log.Println("do func two")
-	time.Sleep(500 * time.Microsecond)
-}
-
-func funcThree() {
-	log.Println("do func three")
-	time.Sleep(2 * time.Second)
+	time.Sleep(1000 * time.Microsecond)
 }

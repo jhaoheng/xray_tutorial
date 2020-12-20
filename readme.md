@@ -52,6 +52,7 @@
 - `curl -X DELETE localhost:9001/del -d '{"id":1}'`
 ## err
 - `curl -X GET localhost:9001/error/400`
+- `curl -X GET localhost:9001/error/429`
 - `curl -X GET localhost:9001/error/500`
 - `curl -X GET localhost:9001/error/panic`
 ## many funcs
