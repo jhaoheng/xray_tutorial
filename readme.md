@@ -29,12 +29,13 @@
     - xray-app
     - xray-mariadb
     - aws-xray-daemon
-2. go to Makefile, to update the args
+2. edit Makefile, to update the below args
     - AWS_ACCOUNT_ID
     - AWS_REGION
 3. push image to ECR
     - `make app`
     - `make xray`
+    - `make mysql`
 4. go to AWS CloudFormation and build stack with `cfn.yml`
 5. go to ECS console and get Task public IP, `curl $IP` and then check XRAY console
 
