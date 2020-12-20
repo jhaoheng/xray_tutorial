@@ -27,7 +27,11 @@ func main() {
 	http.Handle("/all", xray.Handler(xraySegmentNamer, &apis.GetAllRecordHandler{}))
 	// error
 	http.Handle("/error/400", xray.Handler(xraySegmentNamer, &apis.Err400{}))
+	http.Handle("/error/500", xray.Handler(xraySegmentNamer, &apis.Err500{}))
 	http.Handle("/error/panic", xray.Handler(xraySegmentNamer, &apis.ErrPanic{}))
+	// other interesting
+	http.Handle("/many/funcs", xray.Handler(xraySegmentNamer, &apis.ManyFuncsHandler{}))
+	http.Handle("/send/sqs", xray.Handler(xraySegmentNamer, &apis.SendSQSHandler{}))
 	//
 	http.ListenAndServe(":"+defaultPort, nil)
 }

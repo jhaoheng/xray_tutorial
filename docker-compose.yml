@@ -20,14 +20,15 @@ services:
     ports:
       - 9001:9001
     environment:
-      - XRAY_APP_NAME=local-xray-test
-      - XRAY_DAEMON_ADDR=xray-daemon:2000
-      - MYSQL_ADDR=mysql
+      - XRAY_APP_NAME=local-xray-test               # prod required : cloud-xray-test
+      - XRAY_DAEMON_ADDR=xray-daemon:2000           # prod required : localhost:2000
+      - MYSQL_ADDR=mysql                            # prod required : localhost
+      - SQS_QUEUE_URL=http://sqs:9324/queue/default # prod required : dependency with cfn.yml
     volumes:
       - ./app:/home/app
     working_dir: /home/app
     tty: true
-    # command: go run main.go
+    command: go run main.go
 
   mysql:
     image: mariadb:10.5.3
@@ -39,5 +40,12 @@ services:
       - MYSQL_DATABASE=xray
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d
+
+  sqs:
+    image: roribio16/alpine-sqs
+    container_name: sqs
+    ports:
+      - 9324:9324 
+      - 9325:9325 # portal : http://localhost:9325
 
   

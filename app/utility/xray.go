@@ -4,11 +4,16 @@ import (
 	"context"
 	"os"
 
+	"github.com/aws/aws-xray-sdk-go/awsplugins/ecs"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/aws/aws-xray-sdk-go/xraylog"
 )
 
 func init() {
+	// conditionally load plugin
+	if os.Getenv("ENVIRONMENT") == "production" {
+		ecs.Init()
+	}
 	xray.Configure(xray.Config{
 		DaemonAddr:     GetXRAYAddr(), // default
 		ServiceVersion: "0.0.1",
@@ -41,17 +46,24 @@ func GetXRAYAddr() string {
 /*
 DbXrayMiddle ...
 */
-func DbXrayMiddle(ctx context.Context, opName string, f func() error) error {
-	subCtx, subSeg := xray.BeginSubsegment(ctx, "DbXrayMiddle")
+func DbXrayMiddle(level1ctx context.Context, opName string, f func() error) error {
+	addAdvanceInfo(level1ctx, "keyName", "data in level_1_ctx") //
+	level2ctx, subSeg := xray.BeginSubsegment(level1ctx, "DbXrayMiddle")
 	defer subSeg.Close(nil)
+	addAdvanceInfo(level2ctx, "keyName", "data in level_2_ctx") //
 
-	return xray.Capture(subCtx, opName, func(ctx1 context.Context) error {
+	return xray.Capture(level2ctx, opName, func(level3ctx context.Context) error {
 		var err error
 		err = f()
 		if err != nil {
 			return err
 		}
-		err = xray.AddMetadata(ctx1, "tag", "my private metadata")
+		addAdvanceInfo(level3ctx, "keyName", "data in level_3_ctx") //
 		return err
 	})
+}
+
+func addAdvanceInfo(ctx context.Context, key, value string) {
+	xray.AddMetadata(ctx, key, value)
+	xray.AddAnnotation(ctx, key, value)
 }

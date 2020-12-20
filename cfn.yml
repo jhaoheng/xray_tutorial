@@ -42,6 +42,8 @@ Resources:
                 - 'xray:GetSamplingRules'
                 - 'xray:GetSamplingTargets'
                 - 'xray:GetSamplingStatisticSummaries'
+                # sqs
+                - 'sqs:*'
               Resource: '*'  
 
   ECSCluster:
@@ -54,8 +56,8 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Ref 'ServiceName'
-      Memory: 512
-      Cpu: 256
+      Memory: 1024
+      Cpu: 512
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -63,12 +65,49 @@ Resources:
       TaskRoleArn: !GetAtt ECSTaskExecutionRole.Arn
       ContainerDefinitions:
         - Name: "app"
+          DependsOn:
+            - Condition: START
+              ContainerName: "mysql"
+            - Condition: START
+              ContainerName: "xray-daemon"
           Image: !Join
             - '.'
             - - !Ref 'AWS::AccountId'
               - "dkr.ecr"
               - !Ref 'AWS::Region'
               - "amazonaws.com/xray-app"
+          Environment:
+            - Name: "ENVIRONMENT"
+              Value: "production"
+            - Name: "XRAY_APP_NAME"
+              Value: "cloud-xray-test"
+            - Name: "XRAY_DAEMON_ADDR"
+              Value: "localhost:2000"
+            - Name: "MYSQL_ADDR"
+              Value: "localhost"
+            - Name: "SQS_QUEUE_URL"
+              Value: !Ref MySQS
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: !Sub /ecs/${ServiceName}
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: !Ref 'ServiceName'
+        - Name: "mysql"
+          Image: !Join
+            - '.'
+            - - !Ref 'AWS::AccountId'
+              - "dkr.ecr"
+              - !Ref 'AWS::Region'
+              - "amazonaws.com/xray-mariadb:10.5.3"
+          Environment:
+            - Name: "MYSQL_ROOT_PASSWORD"
+              Value: "root"
+            - Name: "MYSQL_DATABASE"
+              Value: "xray"
+          PortMappings:
+            - ContainerPort: 3306
+              Protocol: tcp
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
@@ -128,3 +167,8 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /ecs/${ServiceName}
+
+  MySQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref ServiceName
