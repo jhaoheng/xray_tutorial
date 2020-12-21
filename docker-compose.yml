@@ -37,7 +37,7 @@ services:
       - 3306:3306/tcp
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=xray
+      - MYSQL_DATABASE=myPrivateDatabase
 
   sqs:
     image: roribio16/alpine-sqs

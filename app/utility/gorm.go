@@ -23,7 +23,7 @@ func init() {
 	password := "root"
 	host := getMySQLAddr()
 	port := "3306"
-	dbname := "xray"
+	dbname := "myPrivateDatabase"
 	charset := "utf8mb4"
 
 	DataSourceName := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbname + "?charset=" + charset + "&parseTime=true"

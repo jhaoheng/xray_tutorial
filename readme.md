@@ -50,6 +50,8 @@
 - `curl -X POST $server:9001/new`
 - `curl -X GET $server:9001/all`
 - `curl -X DELETE $server:9001/del -d '{"id":1}'`
+- `curl -X GET $server:9001/sql/by/xray/success`
+- `curl -X GET $server:9001/sql/by/xray/error`
 ## err
 - `curl -X GET $server:9001/error/400`
 - `curl -X GET $server:9001/error/429`

@@ -28,6 +28,8 @@ func main() {
 	http.Handle("/new", xray.Handler(xraySegmentNamer, &apis.NewRecordHandler{}))
 	http.Handle("/del", xray.Handler(xraySegmentNamer, &apis.DelRecordHandler{}))
 	http.Handle("/all", xray.Handler(xraySegmentNamer, &apis.GetAllRecordHandler{}))
+	http.Handle("/sql/by/xray/success", xray.Handler(xraySegmentNamer, &apis.SQLByXrayWithSuccess{}))
+	http.Handle("/sql/by/xray/error", xray.Handler(xraySegmentNamer, &apis.SQLByXrayWithError{}))
 	// error
 	http.Handle("/error/400", xray.Handler(xraySegmentNamer, &apis.Err400{}))
 	http.Handle("/error/429", xray.Handler(xraySegmentNamer, &apis.Err429{}))
