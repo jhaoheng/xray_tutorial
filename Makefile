@@ -47,9 +47,9 @@ test:
 	curl -s -X GET 		localhost:9001 						>> /dev/null;\
 	curl -s -X PUT 		localhost:9001/ping 				>> /dev/null;\
 	curl -s -X POST 	localhost:9001/new					>> /dev/null;\
-	curl -s -X POST 	localhost:9001/new 					>> /dev/null;\
 	curl -s -X GET 		localhost:9001/all 					>> /dev/null;\
 	curl -s -X DELETE 	localhost:9001/del -d '{"id":1}' 	>> /dev/null;\
+	curl -s -X POST 	localhost:9001/new					>> /dev/null;\
 	curl -s -X GET 		localhost:9001/sql/by/xray/success 	>> /dev/null;\
 	curl -s -X GET 		localhost:9001/sql/by/xray/error 	>> /dev/null;\
 	curl -s -X GET 		localhost:9001/error/400 			>> /dev/null;\

@@ -13,12 +13,12 @@ SQLByXrayWithSuccess ...
 type SQLByXrayWithSuccess struct{}
 
 func (h *SQLByXrayWithSuccess) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	log.Println("SQLByXRayHandler")
+	log.Println("SQLByXrayWithSuccess")
 
 	obj, err := utility.SQLByXrayWithSuccess(request.Context())
 	if err != nil {
 		writer.WriteHeader(http.StatusBadGateway)
-		writer.Write([]byte(`bad sql`))
+		writer.Write([]byte(err.Error()))
 		return
 	}
 	b, _ := json.Marshal(obj)
