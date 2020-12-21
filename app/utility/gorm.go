@@ -56,7 +56,7 @@ Insert ...
 func (cars *CARS) Insert(ctx context.Context, name string) error {
 	cars.Name = name
 	// return db.Create(cars).Error
-	return DbXrayMiddle(ctx, "Insert", func() error {
+	return XrayMiddle(ctx, "Insert", func() error {
 		return db.Create(cars).Error
 	})
 }
@@ -67,7 +67,7 @@ GetAll ...
 func (cars *CARS) GetAll(ctx context.Context) []CARS {
 	c := []CARS{}
 	// db.Find(&c)
-	DbXrayMiddle(ctx, "GetAll", func() error {
+	XrayMiddle(ctx, "GetAll", func() error {
 		return db.Find(&c).Error
 	})
 	return c
@@ -79,7 +79,7 @@ Delete ...
 func (cars *CARS) Delete(ctx context.Context, id int) error {
 	cars.ID = id
 	// return db.Delete(cars).Error
-	return DbXrayMiddle(ctx, "Delete", func() error {
+	return XrayMiddle(ctx, "Delete", func() error {
 		return db.Delete(cars).Error
 	})
 }

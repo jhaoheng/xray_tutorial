@@ -53,11 +53,11 @@ func GetXRAYAddr() string {
 }
 
 /*
-DbXrayMiddle ...
+XrayMiddle ...
 */
-func DbXrayMiddle(level1ctx context.Context, opName string, f func() error) error {
+func XrayMiddle(level1ctx context.Context, opName string, f func() error) error {
 	addAdvanceInfo(level1ctx, "keyName", "data in level_1_ctx") //
-	level2ctx, subSeg := xray.BeginSubsegment(level1ctx, "DbXrayMiddle")
+	level2ctx, subSeg := xray.BeginSubsegment(level1ctx, "XrayMiddle")
 	defer subSeg.Close(nil)
 	addAdvanceInfo(level2ctx, "keyName", "data in level_2_ctx") //
 

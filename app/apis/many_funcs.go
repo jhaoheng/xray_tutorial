@@ -15,12 +15,12 @@ type ManyFuncsHandler struct{}
 func (h *ManyFuncsHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	log.Println("many funcs ... ")
 	//
-	utility.DbXrayMiddle(request.Context(), "funcOne", func() error {
+	utility.XrayMiddle(request.Context(), "funcOne", func() error {
 		funcOne()
 		return nil
 	})
 	//
-	utility.DbXrayMiddle(request.Context(), "funcTwo", func() error {
+	utility.XrayMiddle(request.Context(), "funcTwo", func() error {
 		funcTwo()
 		return nil
 	})
