@@ -25,7 +25,7 @@
 
 # deploy to ecs-fargate, steps
 
-1. go to ECR and create two repositories
+1. go to ECR and create three repositories
     - xray-app
     - xray-mariadb
     - aws-xray-daemon
@@ -42,19 +42,19 @@
 
 # xray data generated
 - Localhost test, use `make test` to execute below command
-
+- `server=localhost`
 ## base
-- `curl localhost:9001`
-- `curl localhost:9001/ping`
+- `curl $server:9001`
+- `curl $server:9001/ping`
 ## apis with database 
-- `curl -X POST localhost:9001/new`
-- `curl -X GET localhost:9001/all`
-- `curl -X DELETE localhost:9001/del -d '{"id":1}'`
+- `curl -X POST $server:9001/new`
+- `curl -X GET $server:9001/all`
+- `curl -X DELETE $server:9001/del -d '{"id":1}'`
 ## err
-- `curl -X GET localhost:9001/error/400`
-- `curl -X GET localhost:9001/error/429`
-- `curl -X GET localhost:9001/error/500`
-- `curl -X GET localhost:9001/error/panic`
+- `curl -X GET $server:9001/error/400`
+- `curl -X GET $server:9001/error/429`
+- `curl -X GET $server:9001/error/500`
+- `curl -X GET $server:9001/error/panic`
 ## many funcs
-- `curl -X PATCH localhost:9001/many/funcs`
-- `curl -X PATCH localhost:9001/send/sqs`
+- `curl -X PATCH $server:9001/many/funcs`
+- `curl -X PATCH $server:9001/send/sqs`
