@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-xray-sdk-go/awsplugins/ecs"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/aws/aws-xray-sdk-go/xraylog"
@@ -19,6 +20,14 @@ func init() {
 		ServiceVersion: "0.0.1",
 	})
 	xray.SetLogger(xraylog.NewDefaultLogger(os.Stderr, xraylog.LogLevelInfo))
+}
+
+/*
+XRaySetAWSServices - make AWS Service to enable XRay
+ex : XRaySetAWSServices(s3.Client)
+*/
+func XRaySetAWSServices(client *client.Client) {
+	xray.AWS(client)
 }
 
 /*

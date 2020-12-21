@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 var sqsSvc *sqs.SQS
@@ -32,7 +31,7 @@ func init() {
 		sqsSvc = sqs.New(sess)
 	}
 	// enable sqs within xray
-	xray.AWS(sqsSvc.Client)
+	XRaySetAWSServices(sqsSvc.Client)
 }
 
 /*
