@@ -21,8 +21,12 @@ func (h *GetAllRecordHandler) ServeHTTP(writer http.ResponseWriter, request *htt
 	}
 
 	c := utility.CARS{}
-	objs := c.GetAll(request.Context())
-	// objs := utility.GetAllByXray()
+	objs, err := c.GetAll(request.Context())
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	//
 	writer.WriteHeader(http.StatusOK)
 	b, _ := json.Marshal(objs)
 	writer.Write(b)

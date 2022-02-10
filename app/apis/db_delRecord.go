@@ -36,8 +36,10 @@ func (h *DelRecordHandler) ServeHTTP(writer http.ResponseWriter, request *http.R
 		writer.Write([]byte(`{"state":"error"}`))
 		return
 	}
-	c := utility.CARS{}
-	err = c.Delete(request.Context(), delObj.ID)
+	c := utility.CARS{
+		ID: delObj.ID,
+	}
+	err = c.Delete(request.Context())
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(`{"state":"error"}`))

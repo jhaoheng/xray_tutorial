@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-xray-sdk-go/awsplugins/ecs"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/aws/aws-xray-sdk-go/xraylog"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -18,6 +19,7 @@ func init() {
 	xray.Configure(xray.Config{
 		DaemonAddr:     GetXRAYAddr(), // default
 		ServiceVersion: "0.0.1",
+		// ContextMissingStrategy: ctxmissing.NewDefaultLogErrorStrategy(),
 	})
 	xray.SetLogger(xraylog.NewDefaultLogger(os.Stderr, xraylog.LogLevelInfo))
 }
@@ -38,7 +40,7 @@ func GetXRAYAppName() string {
 	if appName != "" {
 		return appName
 	}
-	return "myApp"
+	return "xray_tutorial"
 }
 
 /*
@@ -53,17 +55,17 @@ func GetXRAYAddr() string {
 }
 
 /*
-XrayMiddle ...
+XrayMiddle ... 抓取資料送到 xray
 */
-func XrayMiddle(level1ctx context.Context, opName string, f func() error) error {
+func XrayMiddle(level1ctx context.Context, opName string, myfunc func() error) error {
 	addAdvanceInfo(level1ctx, "keyName", "data in level_1_ctx") //
+	//
 	level2ctx, subSeg := xray.BeginSubsegment(level1ctx, "XrayMiddle")
 	defer subSeg.Close(nil)
 	addAdvanceInfo(level2ctx, "keyName", "data in level_2_ctx") //
 
 	return xray.Capture(level2ctx, opName, func(level3ctx context.Context) error {
-		var err error
-		err = f()
+		err := myfunc()
 		if err != nil {
 			return err
 		}
@@ -75,4 +77,18 @@ func XrayMiddle(level1ctx context.Context, opName string, f func() error) error 
 func addAdvanceInfo(ctx context.Context, key, value string) {
 	xray.AddMetadata(ctx, key, value)
 	xray.AddAnnotation(ctx, key, value)
+}
+
+/*
+- 因 gorm 與 xray, 互相無法支援, 所以用 wrap 的方式包裝起來
+*/
+func XrayGormWrap(ctx context.Context, gorm_exec func() *gorm.DB, options ...string) *gorm.DB {
+	//
+	ctx, sub_segment := xray.BeginSubsegment(ctx, "gorm")
+	//
+	tx := gorm_exec()
+	//
+	xray.AddMetadata(ctx, "sql_string", options)
+	sub_segment.Close(tx.Error)
+	return tx
 }

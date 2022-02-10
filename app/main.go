@@ -24,17 +24,22 @@ func main() {
 	// API
 	http.Handle("/", xray.Handler(xraySegmentNamer, &apis.RootHandler{}))
 	http.Handle("/ping", xray.Handler(xraySegmentNamer, &apis.PingHandler{}))
-	// DB
-	http.Handle("/new", xray.Handler(xraySegmentNamer, &apis.NewRecordHandler{}))
-	http.Handle("/del", xray.Handler(xraySegmentNamer, &apis.DelRecordHandler{}))
-	http.Handle("/all", xray.Handler(xraySegmentNamer, &apis.GetAllRecordHandler{}))
+
+	// DB, by Gorm
+	http.Handle("/add/by/gorm", xray.Handler(xraySegmentNamer, &apis.NewRecordHandler{}))
+	http.Handle("/del/by/gorm", xray.Handler(xraySegmentNamer, &apis.DelRecordHandler{}))
+	http.Handle("/getall/by/gorm", xray.Handler(xraySegmentNamer, &apis.GetAllRecordHandler{}))
+
+	// DB, by sql.DB
 	http.Handle("/sql/by/xray/success", xray.Handler(xraySegmentNamer, &apis.SQLByXrayWithSuccess{}))
 	http.Handle("/sql/by/xray/error", xray.Handler(xraySegmentNamer, &apis.SQLByXrayWithError{}))
+
 	// error
 	http.Handle("/error/400", xray.Handler(xraySegmentNamer, &apis.Err400{}))
 	http.Handle("/error/429", xray.Handler(xraySegmentNamer, &apis.Err429{}))
 	http.Handle("/error/500", xray.Handler(xraySegmentNamer, &apis.Err500{}))
 	http.Handle("/error/panic", xray.Handler(xraySegmentNamer, &apis.ErrPanic{}))
+
 	// other interesting
 	http.Handle("/many/funcs", xray.Handler(xraySegmentNamer, &apis.ManyFuncsHandler{}))
 	http.Handle("/send/sqs", xray.Handler(xraySegmentNamer, &apis.SendSQSHandler{}))

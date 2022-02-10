@@ -20,7 +20,7 @@ services:
     ports:
       - 9001:9001
     environment:
-      - XRAY_APP_NAME=debug                         # prod required : cloud-xray-test
+      # - XRAY_APP_NAME=debug                         # prod required : cloud-xray-test
       - XRAY_DAEMON_ADDR=xray-daemon:2000           # prod required : localhost:2000
       - MYSQL_ADDR=mysql                            # prod required : localhost
       - SQS_QUEUE_URL=http://sqs:9324/queue/default # prod required : dependency with cfn.yml

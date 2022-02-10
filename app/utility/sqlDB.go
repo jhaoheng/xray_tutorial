@@ -1,5 +1,9 @@
 package utility
 
+/*
+- 使用原生 sql.DB 進行 db 的操作
+*/
+
 import (
 	"context"
 	"database/sql"

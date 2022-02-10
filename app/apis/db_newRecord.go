@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -16,16 +17,19 @@ type NewRecordHandler struct{}
 func (h *NewRecordHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	log.Println("NewRecordHandler")
 	if request.Method != "POST" {
-		writer.WriteHeader(http.StatusBadRequest)
-		writer.Write([]byte(`{"state":"error"}`))
+		text := fmt.Errorf("the method is wrong, %v", request.Method)
+		fmt.Println("=>", text)
+		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	c := utility.CARS{}
-	err := c.Insert(request.Context(), time.Now().String())
+	c := utility.CARS{
+		Name: time.Now().String(),
+	}
+	err := c.Insert(request.Context())
+
+	//
 	if err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		writer.Write([]byte(`{"state":"error"}`))
-		return
+		panic(err)
 	}
 	writer.WriteHeader(http.StatusOK)
 }

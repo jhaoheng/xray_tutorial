@@ -1,5 +1,18 @@
 package utility
 
+/*
+- 使用 gorm 套件, 進行 db 的操作
+
+## 已知 issue
+目前 gorm 不支援 xray 的 subsegment, 所以會出現
+`panic: failed to begin subsegment named 'myPrivateDatabase': segment cannot be found.`
+
+## 解決方法
+就只能透過 xray.BeginSubsegment(ctx, "gorm") 的方式
+在既有的 ctx 下, 建立 Subsegment
+- 缺點非常明顯就是, code 要增加許多, 因為要關閉 Subsegment
+*/
+
 import (
 	"context"
 	"os"
@@ -26,12 +39,18 @@ func init() {
 	dbname := "myPrivateDatabase"
 	charset := "utf8mb4"
 
+	//
 	DataSourceName := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbname + "?charset=" + charset + "&parseTime=true"
 	var err error
+
+	//
 	db, err = gorm.Open(mysql.Open(DataSourceName), &gorm.Config{})
+
 	if err != nil {
 		panic(err)
 	}
+
+	//
 	db.AutoMigrate(&CARS{}) // 根據 module 建立 table
 }
 
@@ -53,33 +72,41 @@ func (cars *CARS) TableName() string {
 /*
 Insert ...
 */
-func (cars *CARS) Insert(ctx context.Context, name string) error {
-	cars.Name = name
-	// return db.Create(cars).Error
-	return XrayMiddle(ctx, "Insert", func() error {
-		return db.Create(cars).Error
-	})
+func (cars *CARS) Insert(ctx context.Context) error {
+	/*
+		- 無法用其他方式取得 query, 所以使用此方法取得
+	*/
+	query := db.Session(&gorm.Session{DryRun: true}).Create(cars).Statement.SQL.String()
+
+	//
+	tx := XrayGormWrap(ctx, func() *gorm.DB {
+		return db.Create(cars)
+	}, query)
+	return tx.Error
 }
 
 /*
 GetAll ...
 */
-func (cars *CARS) GetAll(ctx context.Context) []CARS {
+func (cars *CARS) GetAll(ctx context.Context) ([]CARS, error) {
 	c := []CARS{}
-	// db.Find(&c)
-	XrayMiddle(ctx, "GetAll", func() error {
-		return db.Find(&c).Error
-	})
-	return c
+
+	query := db.Session(&gorm.Session{DryRun: true}).Find(&c).Statement.SQL.String()
+	tx := XrayGormWrap(ctx, func() *gorm.DB {
+		return db.Find(&c)
+	}, query)
+
+	return c, tx.Error
 }
 
 /*
 Delete ...
 */
-func (cars *CARS) Delete(ctx context.Context, id int) error {
-	cars.ID = id
-	// return db.Delete(cars).Error
-	return XrayMiddle(ctx, "Delete", func() error {
-		return db.Delete(cars).Error
-	})
+func (cars *CARS) Delete(ctx context.Context) error {
+	query := db.Session(&gorm.Session{DryRun: true}).Delete(cars).Statement.SQL.String()
+	tx := XrayGormWrap(ctx, func() *gorm.DB {
+		return db.Delete(cars)
+	}, query)
+
+	return tx.Error
 }
