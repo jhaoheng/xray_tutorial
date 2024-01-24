@@ -12,9 +12,13 @@
 - Local AWS Credential
 
 # run localhost
-- run 
-    1. `docker-compose up`
-    2. `make test`
+- first run
+    - cd xray && docker build -t xray-daemon .
+- demo
+    1. 確定 account_id && region, `make show`
+    2. `docker-compose up`
+    3. `cd ./app/utility/ && go test -run gorm_test.go`
+    4. `make test`
 
 ![img](./assets/localhost.png)
 

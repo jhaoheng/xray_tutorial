@@ -15,6 +15,7 @@ package utility
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"gorm.io/driver/mysql"
@@ -52,6 +53,8 @@ func init() {
 
 	//
 	db.AutoMigrate(&CARS{}) // 根據 module 建立 table
+
+	fmt.Println("db 連線成功")
 }
 
 /*
